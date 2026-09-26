@@ -1,0 +1,67 @@
+@model WebApplicationInAspire.Models.ResourceViewModel
+
+@{
+    ViewData["Title"] = "Registrert ressurs";
+}
+<div class="container mt-4">
+    <h1>Registrert ressurs</h1>
+
+    <p>Her er informasjonen som ble registrert:</p>
+
+    <div class="card">
+        <div class="card-body">
+
+            <h2 class="card-title">@Model.Name</h2>
+
+            <dl class="row">
+                <dt class="col-sm-4">Type</dt>
+                <dd class="col-sm-8">@Model.Type</dd>
+
+                <dt class="col-sm-4">Beskrivelse</dt>
+                <dd class="col-sm-8">@Model.Description</dd>
+
+                <dt class="col-sm-4">Kontaktperson</dt>
+                <dd class="col-sm-8">@Model.ContactName</dd>
+
+                <dt class="col-sm-4">Telefonnummer</dt>
+                <dd class="col-sm-8">@Model.PhoneNumber</dd>
+
+                <dt class="col-sm-4">Latitude</dt>
+                <dd class="col-sm-8">@Model.Latitude</dd>
+
+                <dt class="col-sm-4">Longitude</dt>
+                <dd class="col-sm-8">@Model.Longitude</dd>
+            </dl>
+
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <h2>Ressursens plassering</h2>
+
+    <div id="overviewMap" style="height: 400px; width: 100%;"></div>
+</div>
+@section Scripts {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Henter koordinatene som brukeren valgte på registreringskartet.
+        var latitude = @Model.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var longitude = @Model.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        // Oppretter kartet og sentrerer det på den registrerte posisjonen.
+        var map = L.map('overviewMap').setView([latitude, longitude], 13);
+
+        // Legger til kartbilder fra OpenStreetMap.
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap-bidragsytere'
+        }).addTo(map);
+
+        // Plasserer en markør på posisjonen som brukeren valgte.
+        var marker = L.marker([latitude, longitude]).addTo(map);
+
+        // Viser navnet på ressursen når markøren trykkes på.
+        marker.bindPopup(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Name)));
+    </script>
+}

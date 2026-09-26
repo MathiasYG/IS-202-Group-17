@@ -81,8 +81,8 @@
         }
 
         // Skriver koordinatene inn i de skjulte input-feltene i skjemaet
-        document.getElementById('Latitude').value = lat;
-        document.getElementById('Longitude').value = lng;
+        document.getElementById('Latitude').value = lat.toString().replace('.', ',');
+document.getElementById('Longitude').value = lng.toString().replace('.', ',');
     });
     </script>
 }
