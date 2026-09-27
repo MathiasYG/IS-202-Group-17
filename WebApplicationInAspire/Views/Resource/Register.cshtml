@@ -6,7 +6,9 @@
 
 <h2>Registrer ny ressurs</h2>
 
-<form method="post" asp-controller="Resource" asp-action="Register">
+<div class="container">
+       </div>
+</div> <form method="post" asp-controller="Resource" asp-action="Register">
 
     <div>
         <label asp-for="Name">Navn:</label>
@@ -40,7 +42,7 @@
 
     <div>
         <label>Posisjon (klikk i kartet):</label>
-        <div id="map" style="height: 400px; border: 1px solid black;"></div>
+        <div id="map"></div>
     </div>
 
     <input type="hidden" asp-for="Latitude" id="Latitude" />
