@@ -220,11 +220,11 @@ Kartpunktet registreres som Latitude og Longitude, og hele modellen sendes med P
 
 **Faktisk resultat**
 
-`[Fyll inn etter gjennomført test]`
+Skjemaet ble sendt inn uten feil. Valgt kartpunkt ble registrert som Latitude og Longitude, og alle utfylte verdier ble vist på Overview-siden.
 
 **Status**
 
-`[Bestått / Ikke bestått]`
+Bestått
 
 ---
 
@@ -243,11 +243,11 @@ Controlleren mottar modellen og returnerer `Overview` med samme ressursdata. Ove
 
 **Faktisk resultat**
 
-`[Fyll inn etter gjennomført test]`
+Skjemaet ble sendt inn, og Overview-siden viste samme ressursdata som ble registrert. Navn, type, beskrivelse, kontaktperson, telefonnummer, Latitude og Longitude ble vist.`
 
 **Status**
 
-`[Bestått / Ikke bestått]`
+Bestått
 
 ---
 
@@ -265,11 +265,11 @@ Controlleren mottar modellen og returnerer `Overview` med samme ressursdata. Ove
 
 **Faktisk resultat**
 
-`[Fyll inn etter gjennomført test]`
+Type-feltet ble stående tomt. Ved innsending ble brukeren værende på registreringsskjemaet, og meldingen «Type er påkrevd» ble vist.
 
 **Status**
 
-`[Bestått / Ikke bestått]`
+Bestått
 
 ---
 
@@ -290,11 +290,12 @@ Docker-imaget bygges, containeren starter, og webapplikasjonen kan åpnes og bru
 
 **Faktisk resultat**
 
-`[Fyll inn etter faktisk Docker-kjøring]`
+Docker-imaget ble bygget uten feil. Containeren startet som forventet, og webapplikasjonen var tilgjengelig på localhost:8080. Registreringssiden med Leaflet-kart kunne åpnes og brukes.
+
 
 **Status**
 
-`[Bestått / Ikke bestått]`
+Bestått
 
 ---
 
