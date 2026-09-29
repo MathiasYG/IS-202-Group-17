@@ -18,44 +18,46 @@ Applikasjonen består av en webapplikasjon og et .NET Aspire AppHost-prosjekt.
 
 ---
 
-# 2. Systemarkitektur
+## 2. Systemarkitektur
 
 Applikasjonen følger MVC-arkitekturen.
 
 ```text
-                    +-------------------+
-                    |     Nettleser      |
-                    +---------+---------+
-                              |
-                              v
-                    +-------------------+
-                    | Register.cshtml   |
-                    | Skjema + Leaflet  |
-                    +---------+---------+
-                              |
-                              | POST
-                              v
-                    +-------------------+
-                    | ResourceController|
-                    +---------+---------+
-                              |
-                              v
-                    +-------------------+
-                    | ResourceViewModel |
-                    +---------+---------+
-                              |
-                              v
-                    +-------------------+
-                    | Overview.cshtml   |
-                    | Data + Leaflet    |
-                    +-------------------+
++-------------------+
+|     Nettleser     |
++---------+---------+
+          |
+          v
++-------------------+
+| Register.cshtml   |
+| Skjema + Leaflet  |
++---------+---------+
+          |
+          | POST
+          v
++-------------------+
+| ResourceController|
++---------+---------+
+          |
+          v
++-------------------+
+| ResourceViewModel |
++---------+---------+
+          |
+          v
++-------------------+
+| Overview.cshtml   |
+| Data + Leaflet    |
++-------------------+
 ```
 
-## Model
+### Modell
 
-`ResourceViewModel` ligger i `WebApplicationInAspire/Models/ResourceViewModel.cs`.
+`ResourceViewModel` ligger i:
 
-Modellen inneholder:
+`WebApplicationInAspire/Models/ResourceViewModel.cs`
+
+Modellen inneholder følgende felter:
 
 - `Name`
 - `Type`
@@ -65,148 +67,152 @@ Modellen inneholder:
 - `Latitude`
 - `Longitude`
 
-Modellen bruker Data Annotations for validering av obligatoriske felt.
+Modellen bruker Data Annotations for validering av obligatoriske felt. Koordinatene er nullable verdier (`double?`), slik at brukeren må velge en lokasjon i kartet før skjemaet kan sendes inn.
 
-## Controller
+### Controller
 
-`ResourceController` ligger i `WebApplicationInAspire/Controllers/ResourceController.cs`.
+`ResourceController` ligger i:
+
+`WebApplicationInAspire/Controllers/ResourceController.cs`
 
 Controlleren har to actions for registrering:
 
-### GET `/Resource/Register`
+#### GET `/Resource/Register`
 
-GET-metoden oppretter en `ResourceViewModel`, setter et standard kartpunkt og sender modellen til `Register.cshtml`.
+GET-metoden oppretter en tom `ResourceViewModel` og sender modellen til `Register.cshtml`.
 
-### POST `/Resource/Register`
+#### POST `/Resource/Register`
 
 POST-metoden mottar `ResourceViewModel` fra skjemaet.
 
-- Hvis `ModelState` ikke er gyldig, returneres registreringssiden med modellen.
-- Hvis modellen er gyldig, logges registreringen og modellen sendes til `Overview.cshtml`.
+Hvis `ModelState` ikke er gyldig, returneres registreringssiden med modellen og tilhørende valideringsmeldinger.
 
-## Registrerings-view
+Hvis modellen er gyldig, logges registreringen og modellen sendes videre til `Overview.cshtml`.
 
-`WebApplicationInAspire/Views/Resource/Register.cshtml` inneholder skjemaet.
+### Registrerings-view
 
-Skjemaet bruker ASP.NET tag helpers (`asp-for` og `asp-validation-for`) for modellfeltene. Latitude og Longitude sendes som skjulte input-felter.
+`WebApplicationInAspire/Views/Resource/Register.cshtml` inneholder registreringsskjemaet.
 
-## Leaflet og dataflyt
+Skjemaet bruker ASP.NET Tag Helpers som `asp-for` og `asp-validation-for` for modellfeltene. `Latitude` og `Longitude` sendes som skjulte input-felter.
 
-Leaflet brukes til å la brukeren velge en posisjon.
+### Leaflet og dataflyt
+
+Leaflet brukes til å la brukeren velge en geografisk posisjon.
 
 Dataflyten for kartpunktet er:
 
 1. Brukeren klikker på kartet.
 2. Leaflet henter `lat` og `lng` fra klikket.
 3. En markør opprettes eller flyttes til den valgte posisjonen.
-4. Latitude skrives til det skjulte `Latitude`-feltet.
-5. Longitude skrives til det skjulte `Longitude`-feltet.
+4. `Latitude` skrives til det skjulte `Latitude`-feltet.
+5. `Longitude` skrives til det skjulte `Longitude`-feltet.
 6. Når skjemaet sendes inn, blir koordinatene sendt til `ResourceController` sammen med resten av modellen.
-
-På `Overview.cshtml` leses Latitude og Longitude fra modellen. Kartet sentreres på koordinatene, og en markør plasseres på samme sted. Markøren får en popup med ressursens navn.
+7. På `Overview.cshtml` leses `Latitude` og `Longitude` fra modellen.
+8. Kartet sentreres på koordinatene, og en markør plasseres på samme sted.
+9. Markøren får en popup med ressursens navn.
 
 ---
 
-# 3. Drift og kjøring
+## 3. Drift og kjøring
 
-## 3.1 Kjøre webapplikasjonen lokalt
+### 3.1 Kjøre webapplikasjonen lokalt
 
-Fra roten av repositoryet:
+Kjør fra roten av repositoryet:
 
-```bash
+```
 dotnet run --project WebApplicationInAspire/WebApplicationInAspire.csproj
 ```
 
 Prosjektets `launchSettings.json` angir følgende lokale adresser:
 
-```text
+```
 http://localhost:5011
 https://localhost:7018
 ```
 
-## 3.2 Kjøre med .NET Aspire
+### 3.2 Kjøre med .NET Aspire
 
 AppHost ligger i `WebApplicationInAspire.AppHost/` og registrerer webprosjektet slik:
 
-```csharp
+```
 builder.AddProject<Projects.WebApplicationInAspire>("webapplicationinaspire");
 ```
 
 Start AppHost fra roten av repositoryet:
 
-```bash
+```
 dotnet run --project WebApplicationInAspire.AppHost/WebApplicationInAspire.AppHost.csproj
 ```
 
 Aspire starter webprosjektet som er registrert i AppHost og viser prosjektet i Aspire-dashboardet.
 
-## 3.3 Docker
+### 3.3 Docker
 
-Prosjektet bruker en multi-stage `Dockerfile` i roten av repositoryet.
+Prosjektet bruker en multi-stage Dockerfile i roten av repositoryet.
 
 Dockerfilen består av to steg:
 
-1. `mcr.microsoft.com/dotnet/sdk:10.0` brukes til restore, build og publish.
-2. `mcr.microsoft.com/dotnet/aspnet:10.0` brukes som mindre runtime-image.
+- `mcr.microsoft.com/dotnet/sdk:10.0` brukes til restore, build og publish.
+- `mcr.microsoft.com/dotnet/aspnet:10.0` brukes som et mindre runtime-image.
 
 Applikasjonen eksponeres på port `8080` i containeren.
 
-### Bygge Docker-imaget
+#### Bygge Docker-imaget
 
 Kjør fra roten av repositoryet:
 
-```bash
+```
 docker build -t resource-registration .
 ```
 
-### Kjøre containeren
+#### Kjøre containeren
 
-```bash
+```
 docker run --rm -p 8080:8080 resource-registration
 ```
 
 Åpne deretter:
 
-```text
-http://localhost:8080
+```
+http://localhost:8080/Resource/Register
 ```
 
-### Kontrollere containeren
+#### Kontrollere containeren
 
 Kjør:
 
-```bash
+```
 docker ps
 ```
 
 Containeren skal stå som kjørende. Hvis den stopper, kan loggene undersøkes med:
 
-```bash
+```
 docker logs <container-id>
 ```
 
 ### Docker-verifisering
 
-Docker-verifiseringen skal kontrollere følgende:
+Docker-verifiseringen kontrollerer følgende:
 
-- [ ] `docker build` fullføres uten feil.
-- [ ] Containeren starter uten feil.
-- [ ] Webapplikasjonen åpnes på `http://localhost:8080`.
-- [ ] Registreringssiden kan åpnes.
-- [ ] Leaflet-kartet vises.
-- [ ] Et kartpunkt kan velges.
-- [ ] Registreringen kan sendes til Overview.
-- [ ] Overview viser registrerte data og kartmarkør.
+- [x] `docker build` fullføres uten feil.
+- [x] Containeren starter uten feil.
+- [x] Webapplikasjonen åpnes på `http://localhost:8080`.
+- [x] Registreringssiden kan åpnes.
+- [x] Leaflet-kartet vises.
+- [x] Et kartpunkt kan velges.
+- [x] Registreringen kan sendes til Overview.
+- [x] Overview viser registrerte data og kartmarkør.
 
-**Faktisk resultat:** Fyll inn resultatet etter at kommandoene over er kjørt på en maskin med Docker.
+**Faktisk resultat:** Docker-imaget ble bygget lokalt, og containeren startet på port `8080`. Registreringsskjemaet med Leaflet-kart og innsending til oversiktssiden fungerte som forventet.
 
 ---
 
-# 4. Testscenarier og resultater
+## 4. Testscenarier og resultater
 
-## Test 1 – Fyll ut skjema og velg kartpunkt
+### Test 1 – Fyll ut skjema og velg kartpunkt
 
-**Fremgangsmåte**
+#### Fremgangsmåte
 
 1. Åpne `/Resource/Register`.
 2. Fyll inn navn, type, beskrivelse, kontaktperson og telefonnummer.
@@ -214,104 +220,137 @@ Docker-verifiseringen skal kontrollere følgende:
 4. Kontroller at markøren flyttes til valgt punkt.
 5. Send inn skjemaet.
 
-**Forventet resultat**
+#### Forventet resultat
 
-Kartpunktet registreres som Latitude og Longitude, og hele modellen sendes med POST til `ResourceController`.
+Kartpunktet registreres som `Latitude` og `Longitude`, og hele modellen sendes med POST til `ResourceController`.
 
-**Faktisk resultat**
+#### Faktisk resultat
 
-Skjemaet ble sendt inn uten feil. Valgt kartpunkt ble registrert som Latitude og Longitude, og alle utfylte verdier ble vist på Overview-siden.
+Skjemaet ble sendt inn uten feil. Valgt kartpunkt ble registrert som `Latitude` og `Longitude`, og alle utfylte verdier ble vist på Overview-siden.
 
-**Status**
+**Status:** Bestått
 
-Bestått
+### Test 2 – POST sender data til Overview
 
----
-
-## Test 2 – POST sender data til Overview
-
-**Fremgangsmåte**
+#### Fremgangsmåte
 
 1. Registrer en ressurs med alle obligatoriske felter.
 2. Velg et punkt på kartet.
-3. Trykk på `Registrer`.
+3. Trykk på **Registrer**.
 4. Kontroller Overview-siden.
 
-**Forventet resultat**
+#### Forventet resultat
 
-Controlleren mottar modellen og returnerer `Overview` med samme ressursdata. Overview skal vise navn, type, beskrivelse, kontaktperson, telefonnummer, Latitude og Longitude. Kartet skal vise en markør på de registrerte koordinatene.
+Controlleren mottar modellen og returnerer Overview med samme ressursdata. Overview skal vise navn, type, beskrivelse, kontaktperson, telefonnummer, `Latitude` og `Longitude`. Kartet skal vise en markør på de registrerte koordinatene.
 
-**Faktisk resultat**
+#### Faktisk resultat
 
-Skjemaet ble sendt inn, og Overview-siden viste samme ressursdata som ble registrert. Navn, type, beskrivelse, kontaktperson, telefonnummer, Latitude og Longitude ble vist.`
+Skjemaet ble sendt inn, og Overview-siden viste samme ressursdata som ble registrert. Navn, type, beskrivelse, kontaktperson, telefonnummer, `Latitude` og `Longitude` ble vist, sammen med et oppdatert kart med markør og popup.
 
-**Status**
+**Status:** Bestått
 
-Bestått
+### Test 3 – Validering ved manglende felt
 
----
-
-## Test 3 – Validering ved manglende felt
-
-**Fremgangsmåte**
+#### Fremgangsmåte
 
 1. Åpne registreringsskjemaet.
-2. La ett eller flere obligatoriske felt stå tomme.
+2. La ett eller flere obligatoriske felt stå tomme, eller la være å velge et punkt i kartet.
 3. Send inn skjemaet.
 
-**Forventet resultat**
+#### Forventet resultat
 
-`ModelState.IsValid` skal være `false`, og Controlleren skal returnere registrerings-viewet i stedet for å sende brukeren til Overview.
+`ModelState.IsValid` skal være `false`, og controlleren skal returnere registrerings-viewet i stedet for å sende brukeren til Overview. Tilhørende feilmeldinger skal vises.
 
-**Faktisk resultat**
+#### Faktisk resultat
 
-Type-feltet ble stående tomt. Ved innsending ble brukeren værende på registreringsskjemaet, og meldingen «Type er påkrevd» ble vist.
+Ved manglende felter eller manglende lokasjon i kartet stoppet innsendingen, og tilhørende valideringsmeldinger ble vist med rød tekst under de respektive feltene.
 
-**Status**
+**Status:** Bestått
 
-Bestått
+### Test 4 – Docker-verifisering
 
----
+#### Fremgangsmåte
 
-## Test 4 – Docker-verifisering
-
-**Fremgangsmåte**
-
-```bash
+```
 docker build -t resource-registration .
 docker run --rm -p 8080:8080 resource-registration
 ```
 
-Åpne deretter `http://localhost:8080`.
+Åpne deretter:
 
-**Forventet resultat**
+```
+http://localhost:8080/Resource/Register
+```
+
+#### Forventet resultat
 
 Docker-imaget bygges, containeren starter, og webapplikasjonen kan åpnes og brukes gjennom nettleseren.
 
-**Faktisk resultat**
+#### Faktisk resultat
 
-Docker-imaget ble bygget uten feil. Containeren startet som forventet, og webapplikasjonen var tilgjengelig på localhost:8080. Registreringssiden med Leaflet-kart kunne åpnes og brukes.
+Docker-imaget ble bygget uten feil. Containeren startet som forventet, og webapplikasjonen var tilgjengelig på `localhost:8080`. Registreringssiden med Leaflet-kart kunne åpnes og brukes.
 
-
-**Status**
-
-Bestått
+**Status:** Bestått
 
 ---
 
-# 5. Testoversikt
+## 5. Testoversikt
 
 | Test | Forventet resultat | Faktisk resultat | Status |
 |---|---|---|---|
-| Skjema + kartpunkt | Koordinater lagres og sendes med modellen | [Fyll inn] | [ ] |
-| POST → Overview | Registrerte data og riktig kartpunkt vises | [Fyll inn] | [ ] |
-| Manglende felt | Validering stopper innsending og viser skjemaet på nytt | [Fyll inn] | [ ] |
-| Docker | Image bygges og applikasjonen kjører i container | [Fyll inn] | [ ] |
+| Skjema + kartpunkt | Koordinater lagres og sendes med modellen | Koordinater ble registrert og sendt med modellen | Bestått |
+| POST → Overview | Registrerte data og riktig kartpunkt vises | Overview viser registrerte data og korrekt markør i kartet | Bestått |
+| Manglende felt | Validering stopper innsending og viser skjemaet på nytt | Skjemaet stoppet innsending og viste valideringsfeil | Bestått |
+| Docker | Image bygges og applikasjonen kjører i container | Image ble bygget uten feil og kjørte på port 8080 | Bestått |
 
 ---
 
-# 6. Konklusjon
+## 6. Bruk av kunstig intelligens (KI)
 
-Applikasjonen implementerer en MVC-basert ressursregistrering der Leaflet brukes til å velge geografisk posisjon. ResourceController mottar registreringsdataene og sender en gyldig modell videre til Overview. .NET Aspire AppHost brukes til å starte webprosjektet, og Docker kan brukes til å bygge og kjøre webapplikasjonen som en container.
+I henhold til oppgavekravene er kunstig intelligens benyttet som støtte- og læringsverktøy gjennom prosjektet, fra idé og planlegging til koding, feilsøking og dokumentasjon.
 
-Dokumentasjonen beskriver arkitekturen, dataflyten, kjøring med .NET Aspire og Docker samt testene som skal gjennomføres for å verifisere funksjonaliteten.
+### Verktøy benyttet
+
+- **GitHub Copilot:** Kodeassistent direkte i IDE/VS Code for kodeforslag og maler.
+- **ChatGPT / Gemini:** Sparringspartner for systemarkitektur, feilsøking av Docker- og kulturrelaterte problemer og strukturering av dokumentasjon.
+
+### Bruksområder
+
+#### Idé og arkitektur
+
+- Diskusjon rundt MVC-mønsteret.
+- Vurdering av hvordan klikkhendelser i Leaflet-kartet kan bindes mot ASP.NET Model Binding via skjulte felter.
+
+#### Koding og validering
+
+- Oppsett av `ResourceViewModel` med Data Annotations for validering.
+- Håndtering av formateringsproblemer, blant annet desimalkomma kontra desimalpunktum ved bruk av `CultureInfo.InvariantCulture` mellom Leaflet og C#.
+
+#### Drift og Docker
+
+- Kvalitetssikring av multi-stage Dockerfile for .NET 10.
+
+#### Feilsøking
+
+- Feilsøking av valideringsfeilen `The value is not valid for Latitude`.
+- Feilsøking av `CS1501`-kompileringsfeil ved `ToString`-formatering av nullable datatyper.
+
+### Eksempler på faktiske prompts
+
+> Hvordan setter jeg opp Leaflet.js slik at et klikk i kartet oppdaterer to skjulte inputfelter med Latitude og Longitude i et ASP.NET Core MVC-skjema?
+
+> Hvorfor får jeg "The value is not valid for Latitude" i ASP.NET Core når Leaflet sender inn koordinater med desimalpunktum?
+
+> Lag en multi-stage Dockerfile for en .NET 10 ASP.NET Core MVC-applikasjon som eksponerer port 8080.
+
+> Hvordan håndterer jeg at ResourceViewModel har nullable doubles for kartkoordinater slik at [Required] faktisk feiler hvis kartet ikke er klikket på?
+
+---
+
+## 7. Konklusjon
+
+Applikasjonen implementerer en MVC-basert ressursregistrering der Leaflet brukes til å velge geografisk posisjon. `ResourceController` mottar registreringsdataene og sender en gyldig modell videre til Overview.
+
+.NET Aspire AppHost brukes til å starte webprosjektet, og Docker kan brukes til å bygge og kjøre webapplikasjonen som en container.
+
+Dokumentasjonen beskriver arkitekturen, dataflyten, kjøring med .NET Aspire og Docker samt testene som er gjennomført for å verifisere funksjonaliteten.

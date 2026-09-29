@@ -4,89 +4,86 @@
     ViewData["Title"] = "Registrer ressurs";
 }
 
-<h2>Registrer ny ressurs</h2>
+<div class="container mt-4">
+    <h2>Registrer ny ressurs</h2>
 
-<div class="container">
-       </div>
-</div> <form method="post" asp-controller="Resource" asp-action="Register">
+    <form method="post" asp-controller="Resource" asp-action="Register">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div>
-        <label asp-for="Name">Navn:</label>
-        <input asp-for="Name" />
-        <span asp-validation-for="Name"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Navn:</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
 
-    <div>
-        <label asp-for="Type">Type:</label>
-        <input asp-for="Type" />
-        <span asp-validation-for="Type"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Type" class="form-label">Type:</label>
+            <input asp-for="Type" class="form-control" />
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
 
-    <div>
-        <label asp-for="Description">Beskrivelse:</label>
-        <input asp-for="Description" />
-        <span asp-validation-for="Description"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Beskrivelse:</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
 
-    <div>
-        <label asp-for="ContactName">Kontaktperson:</label>
-        <input asp-for="ContactName" />
-        <span asp-validation-for="ContactName"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="ContactName" class="form-label">Kontaktperson:</label>
+            <input asp-for="ContactName" class="form-control" />
+            <span asp-validation-for="ContactName" class="text-danger"></span>
+        </div>
 
-    <div>
-        <label asp-for="PhoneNumber">Telefonnummer:</label>
-        <input asp-for="PhoneNumber" />
-        <span asp-validation-for="PhoneNumber"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="PhoneNumber" class="form-label">Telefonnummer:</label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
 
-    <div>
-        <label>Posisjon (klikk i kartet):</label>
-        <div id="map"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Posisjon (klikk i kartet):</label>
+            <div id="map" style="height: 400px; width: 100%; border-radius: 8px;" class="border"></div>
+            <span asp-validation-for="Latitude" class="text-danger d-block mt-1"></span>
+        </div>
 
-    <input type="hidden" asp-for="Latitude" id="Latitude" />
-    <input type="hidden" asp-for="Longitude" id="Longitude" />
-    <span asp-validation-for="Latitude"></span>
+        <!-- Skjulte inputs for koordinater som fylles ut via kartklikk -->
+        <input type="hidden" asp-for="Latitude" id="Latitude" />
+        <input type="hidden" asp-for="Longitude" id="Longitude" />
 
-    <br />
-    <button type="submit">Registrer</button>
-
-</form>
+        <button type="submit" class="btn btn-primary mt-2">Registrer</button>
+    </form>
+</div>
 
 @section Scripts {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> 
 
     <script>
-    // Her Oppretter Leaflet-kartet i div-en med id="map", sentrert på Kristiansand/Agder
-    var map = L.map('map').setView([58.1467, 7.9956], 13);
+        // Oppretter Leaflet-kartet i div-en med id="map", sentrert på Kristiansand/Agder
+        var map = L.map('map').setView([58.1467, 7.9956], 13);
 
-    // Her blir bildene hentet fra OpenStreetMap og legger dem til kartet
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap-bidragsytere'
-    }).addTo(map);
+        // Henter fliser fra OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap-bidragsytere'
+        }).addTo(map);
 
-    // Holder styr på markøren slik at hvem som helst kan flytte den i stedet for å lage nye
-    var marker;
+        var marker;
 
-    // Lytter eller ser etter klikk på kartet
-    map.on('click', function (e) {
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
+        // Lytter etter klikk på kartet
+        map.on('click', function (e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
 
-        // Hvis markøren allerede finnes, flytt den. Ellers, opprett en ny.
-        if (marker) {
-            marker.setLatLng(e.latlng);
-        } else {
-            marker = L.marker(e.latlng).addTo(map);
-        }
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
 
-        // Skriver koordinatene inn i de skjulte input-feltene i skjemaet
-        document.getElementById('Latitude').value = lat.toString().replace('.', ',');
-document.getElementById('Longitude').value = lng.toString().replace('.', ',');
-    });
+            // Setter koordinatene direkte i de skjulte feltene
+            document.getElementById('Latitude').value = lat;
+            document.getElementById('Longitude').value = lng;
+        });
     </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
-
