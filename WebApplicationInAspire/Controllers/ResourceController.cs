@@ -15,13 +15,7 @@ public class ResourceController : Controller
     [HttpGet]
     public IActionResult Register()
     {
-        var model = new ResourceViewModel
-        {
-            Latitude = 58.1467,
-            Longitude = 7.9956
-        };
-
-        return View(model);
+        return View(new ResourceViewModel());
     }
 
     [HttpPost]

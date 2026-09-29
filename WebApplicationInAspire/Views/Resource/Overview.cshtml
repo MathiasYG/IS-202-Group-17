@@ -47,8 +47,8 @@
 
     <script>
         // Henter koordinatene som brukeren valgte på registreringskartet.
-        var latitude = @Model.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        var longitude = @Model.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var latitude = @Model.Latitude?.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var longitude = @Model.Longitude?.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         // Oppretter kartet og sentrerer det på den registrerte posisjonen.
         var map = L.map('overviewMap').setView([latitude, longitude], 13);
