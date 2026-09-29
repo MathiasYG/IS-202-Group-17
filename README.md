@@ -311,8 +311,7 @@ I henhold til oppgavekravene er kunstig intelligens benyttet som støtte- og læ
 
 ### Verktøy benyttet
 
-- **GitHub Copilot:** Kodeassistent direkte i IDE/VS Code for kodeforslag og maler.
-- **ChatGPT / Gemini:** Sparringspartner for systemarkitektur, feilsøking av Docker- og kulturrelaterte problemer og strukturering av dokumentasjon.
+- **GitHub Copilot:** Kodeassistent direkte i IDE/VS Code for kodeforslag og maler. Vi brukte de også som sparringspartner for systemarkitektur, feilsøking av Docker- og kulturrelaterte problemer og strukturering av dokumentasjon.
 
 ### Bruksområder
 
@@ -340,8 +339,6 @@ I henhold til oppgavekravene er kunstig intelligens benyttet som støtte- og læ
 > Hvordan setter jeg opp Leaflet.js slik at et klikk i kartet oppdaterer to skjulte inputfelter med Latitude og Longitude i et ASP.NET Core MVC-skjema?
 
 > Hvorfor får jeg "The value is not valid for Latitude" i ASP.NET Core når Leaflet sender inn koordinater med desimalpunktum?
-
-> Lag en multi-stage Dockerfile for en .NET 10 ASP.NET Core MVC-applikasjon som eksponerer port 8080.
 
 > Hvordan håndterer jeg at ResourceViewModel har nullable doubles for kartkoordinater slik at [Required] faktisk feiler hvis kartet ikke er klikket på?
 
